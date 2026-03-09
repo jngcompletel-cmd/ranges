@@ -1,48 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
-<title>Poker Trainer Quiz 20 Questions</title>
+<title>Poker Range Trainer</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body { font-family: Arial; text-align:center; padding:10px; }
-#hand { font-size: 70px; margin:20px; }
-button { font-size: 18px; padding: 15px 20px; margin: 5px; border-radius: 10px; }
-#spotSelector { font-size:18px; padding:5px; margin-bottom:10px; }
-#quizButtons { margin-top:20px; }
-#stats { margin-top:20px; font-size:18px; }
-textarea { width:90%; margin-top:10px; }
+
+body{
+font-family:Arial;
+text-align:center;
+padding:20px;
+}
+
+#hand{
+font-size:70px;
+margin:30px;
+}
+
+button{
+font-size:18px;
+padding:14px 20px;
+margin:6px;
+border-radius:10px;
+border:none;
+}
+
+.raise{background:#4CAF50;color:white}
+.shove{background:#e74c3c;color:white}
+.call{background:#3498db;color:white}
+.fold{background:#555;color:white}
+.var{background:#f1c40f}
+
+#stats{
+margin-top:20px;
+font-size:18px;
+}
+
 </style>
+
 </head>
+
 <body>
 
-<h2>Spot:
+<h2>Poker Preflop Trainer</h2>
+
+<h3>Importer une range</h3>
+<input type="file" id="fileInput" accept=".json" onchange="loadJSON(event)">
+
+<br><br>
+
+<label>Spot :</label>
+
 <select id="spotSelector" onchange="changeSpot()">
-  <option value="BTN_open_25bb">BTN open 25bb</option>
-  <option value="BTN_shove_10bb">BTN shove 10bb</option>
-  <option value="SB_vs_BTN_open">SB vs BTN open</option>
-  <option value="BB_vs_BTN_open">BB vs BTN open</option>
+
+<option value="BTN_open_25bb">BTN open 25bb</option>
+<option value="BTN_shove_10bb">BTN shove 10bb</option>
+<option value="SB_vs_BTN_open">SB vs BTN open</option>
+<option value="BB_vs_BTN_open">BB vs BTN open</option>
+
 </select>
-</h2>
 
-<h2 id="hand"></h2>
+<h1 id="hand">--</h1>
 
-<div id="quizButtons">
-  <button onclick="answer('raise')">Raise</button>
-  <button onclick="answer('shove')">Shove</button>
-  <button onclick="answer('call')">Call</button>
-  <button onclick="answer('fold')">Fold</button>
-  <button onclick="answer('var')">Var</button>
+<div>
+
+<button class="raise" onclick="answer('raise')">Raise</button>
+<button class="shove" onclick="answer('shove')">Shove</button>
+<button class="call" onclick="answer('call')">Call</button>
+<button class="fold" onclick="answer('fold')">Fold</button>
+<button class="var" onclick="answer('var')">Var</button>
+
 </div>
 
 <div id="stats">
-  <p>Total : <span id="total">0</span> / 20</p>
-  <p>Correct : <span id="correct">0</span></p>
-  <p>Accuracy : <span id="accuracy">0</span>%</p>
+
+<p>Total : <span id="total">0</span> / 20</p>
+<p>Correct : <span id="correct">0</span></p>
+<p>Accuracy : <span id="accuracy">0</span>%</p>
+
 </div>
 
-<button onclick="restartQuiz()" id="restartBtn" style="display:none">Rejouer les mains incorrectes</button>
+<br>
 
-<script src="trainer_quiz.js"></script>
+<button onclick="retryErrors()" id="retryBtn" style="display:none">
+Rejouer les erreurs
+</button>
+
+<script src="trainer.js"></script>
+
 </body>
 </html>
+
