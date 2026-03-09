@@ -1,5 +1,3 @@
-
-
 const ranks=["A","K","Q","J","T","9","8","7","6","5","4","3","2"]
 
 let gridHands=[]
@@ -130,21 +128,50 @@ document.getElementById("hand").innerText=currentHand
 
 }
 
+function normalize(hand){
+
+const order="AKQJT98765432"
+
+if(hand.length==2) return hand
+
+let r1=hand[0]
+let r2=hand[1]
+let type=hand[2]
+
+if(order.indexOf(r1) < order.indexOf(r2)){
+
+return r1+r2+type
+
+}else{
+
+return r2+r1+type
+
+}
+
+}
+
 function getCorrectAction(){
 
 let spot=ranges[currentSpot]
 
-if(!spot)return "fold"
+if(!spot) return "fold"
 
-if(spot.raise && spot.raise.includes(currentHand))return"raise"
+let hand=normalize(currentHand)
 
-if(spot.shove && spot.shove.includes(currentHand))return"shove"
+function check(list){
 
-if(spot.call && spot.call.includes(currentHand))return"call"
+if(!list) return false
 
-if(spot.var && spot.var.includes(currentHand))return"var"
+return list.map(h=>normalize(h.trim())).includes(hand)
 
-return"fold"
+}
+
+if(check(spot.raise)) return "raise"
+if(check(spot.shove)) return "shove"
+if(check(spot.call)) return "call"
+if(check(spot.var)) return "var"
+
+return "fold"
 
 }
 
@@ -158,9 +185,7 @@ if(action===good){
 
 correct++
 
-}
-
-else{
+}else{
 
 retryHands.push(currentHand)
 
