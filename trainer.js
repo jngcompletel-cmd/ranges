@@ -1,5 +1,4 @@
 const ranks=["A","K","Q","J","T","9","8","7","6","5","4","3","2"];
-
 let gridHands=[];
 let ranges={};
 let errorsMemory={};
@@ -16,7 +15,7 @@ let index=0;
 let total=0;
 let correct=0;
 
-// Générer toutes les mains 169
+// Générer les 169 mains
 function generateHands(){
     for(let i=0;i<13;i++){
         for(let j=0;j<13;j++){
@@ -79,7 +78,7 @@ function getBorderHands(){
     return [...new Set(borders)];
 }
 
-// Construire le pool de mains en excluant les ignores
+// Construire pool de mains
 function buildPool(){
     let pool=[];
     if(mode==="range") pool=getRangeHands();
@@ -89,7 +88,7 @@ function buildPool(){
     let spot=ranges[currentSpot];
     if(spot && spot.ignore){
         // Exclure toutes les mains ignore
-        pool=pool.filter(hand=>!spot.ignore.includes(hand));
+        pool=pool.filter(hand => !spot.ignore.includes(hand));
     }
     return pool;
 }
@@ -107,7 +106,7 @@ function addErrorWeight(pool){
     return weighted;
 }
 
-// Mélange du tableau
+// Mélange
 function shuffle(array){
     for(let i=array.length-1;i>0;i--){
         let j=Math.floor(Math.random()*(i+1));
@@ -115,7 +114,7 @@ function shuffle(array){
     }
 }
 
-// Démarrer la session
+// Démarrer quiz
 function startQuiz(){
     total=0; correct=0; index=0; retryHands=[];
 
@@ -134,7 +133,7 @@ function startQuiz(){
     document.getElementById("retryBtn").style.display="none";
 }
 
-// Afficher la prochaine main
+// Afficher main suivante
 function nextHand(){
     if(index>=sessionHands.length){
         endQuiz();
@@ -144,7 +143,7 @@ function nextHand(){
     document.getElementById("hand").innerText=currentHand;
 }
 
-// Normalisation pour comparer
+// Normalisation pour comparaison
 function normalize(hand){
     const order="AKQJT98765432";
     if(hand.length==2) return hand;
@@ -153,10 +152,13 @@ function normalize(hand){
     return r2+r1+t;
 }
 
-// Obtenir l’action correcte pour la main
+// Obtenir action correcte
 function getCorrectAction(){
     let spot=ranges[currentSpot];
     if(!spot) return "fold";
+    // Exclure ignore
+    if(spot.ignore && spot.ignore.includes(currentHand)) return null;
+
     let hand=normalize(currentHand);
     function check(list){ if(!list) return false; return list.map(h=>normalize(h.trim())).includes(hand);}
     if(check(spot.raise)) return "raise";
@@ -166,9 +168,14 @@ function getCorrectAction(){
     return "fold";
 }
 
-// Réponse de l’utilisateur
+// Réponse utilisateur
 function answer(action){
     let good=getCorrectAction();
+    if(good===null){
+        index++;
+        nextHand();
+        return;
+    }
     total++;
     if(action===good) correct++;
     else{
@@ -180,7 +187,7 @@ function answer(action){
     nextHand();
 }
 
-// Mettre à jour les stats
+// Stats
 function updateStats(){
     document.getElementById("total").innerText=total;
     document.getElementById("correct").innerText=correct;
@@ -188,14 +195,14 @@ function updateStats(){
     document.getElementById("accuracy").innerText=acc;
 }
 
-// Fin de session
+// Fin session
 function endQuiz(){
     document.getElementById("hand").innerText="Session terminée";
     alert("Score : "+correct+" / "+total);
     if(retryHands.length>0) document.getElementById("retryBtn").style.display="inline";
 }
 
-// Rejouer les erreurs
+// Rejouer erreurs
 function retryErrors(){
     sessionHands=[...new Set(retryHands)];
     retryHands=[];
@@ -207,3 +214,6 @@ function retryErrors(){
 }
 
 generateHands();
+
+
+
