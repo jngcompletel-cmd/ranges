@@ -4,7 +4,6 @@
 
 <meta charset="UTF-8">
 <title>Poker Range Trainer</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -14,10 +13,6 @@ font-family:Arial;
 text-align:center;
 padding:20px;
 background:#f4f4f4;
-}
-
-h2{
-margin-bottom:10px;
 }
 
 #hand{
@@ -34,39 +29,21 @@ border:none;
 cursor:pointer;
 }
 
-.raise{
-background:#2ecc71;
-color:white;
-}
-
-.shove{
-background:#e74c3c;
-color:white;
-}
-
-.call{
-background:#3498db;
-color:white;
-}
-
-.fold{
-background:#555;
-color:white;
-}
-
-.var{
-background:#f1c40f;
-}
-
-#stats{
-margin-top:20px;
-font-size:18px;
-}
+.raise{background:#2ecc71;color:white}
+.shove{background:#e74c3c;color:white}
+.call{background:#3498db;color:white}
+.fold{background:#555;color:white}
+.var{background:#f1c40f}
 
 select{
 font-size:16px;
 padding:6px;
 margin:5px;
+}
+
+#stats{
+margin-top:20px;
+font-size:18px;
 }
 
 </style>
@@ -79,19 +56,17 @@ margin:5px;
 
 <h3>Importer une range JSON</h3>
 
-<input type="file" id="fileInput" accept=".json" onchange="loadJSON(event)">
+<input type="file" accept=".json" onchange="loadJSON(event)">
 
 <br><br>
 
 <label>Spot :</label>
 
 <select id="spotSelector" onchange="changeSpot()">
-
 <option value="BTN_open_25bb">BTN open 25bb</option>
 <option value="BTN_shove_10bb">BTN shove 10bb</option>
 <option value="SB_vs_BTN_open">SB vs BTN open</option>
 <option value="BB_vs_BTN_open">BB vs BTN open</option>
-
 </select>
 
 <br><br>
@@ -99,11 +74,9 @@ margin:5px;
 <label>Mode :</label>
 
 <select id="modeSelector" onchange="changeMode()">
-
 <option value="normal">Trainer complet</option>
 <option value="range">Range uniquement</option>
 <option value="border">Frontières</option>
-
 </select>
 
 <br><br>
@@ -111,45 +84,25 @@ margin:5px;
 <label>Questions :</label>
 
 <select id="sizeSelector" onchange="changeSize()">
-
 <option value="20">20</option>
 <option value="50">50</option>
 <option value="100">100</option>
-
 </select>
 
 <h1 id="hand">--</h1>
 
 <div>
-
-<button class="raise" onclick="answer('raise')">
-Raise
-</button>
-
-<button class="shove" onclick="answer('shove')">
-Shove
-</button>
-
-<button class="call" onclick="answer('call')">
-Call
-</button>
-
-<button class="fold" onclick="answer('fold')">
-Fold
-</button>
-
-<button class="var" onclick="answer('var')">
-Var
-</button>
-
+<button class="raise" onclick="answer('raise')">Raise</button>
+<button class="shove" onclick="answer('shove')">Shove</button>
+<button class="call" onclick="answer('call')">Call</button>
+<button class="fold" onclick="answer('fold')">Fold</button>
+<button class="var" onclick="answer('var')">Var</button>
 </div>
 
 <div id="stats">
 
 <p>Total : <span id="total">0</span></p>
-
 <p>Correct : <span id="correct">0</span></p>
-
 <p>Accuracy : <span id="accuracy">0</span>%</p>
 
 </div>
@@ -157,15 +110,12 @@ Var
 <br>
 
 <button onclick="retryErrors()" id="retryBtn" style="display:none">
-
 Rejouer les erreurs
-
 </button>
 
 <script src="trainer.js"></script>
 
 </body>
-
 </html>
 
 
