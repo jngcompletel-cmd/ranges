@@ -57,7 +57,7 @@ function getRangeHands(){
     return [...new Set(all)];
 }
 
-// Mode frontière corrigé
+// Mode frontière
 function getBorderHands(){
     let range=getRangeHands();
     let borders=[];
@@ -87,7 +87,7 @@ function buildPool(){
 
     let spot=ranges[currentSpot];
     if(spot && spot.ignore){
-        // Exclure toutes les mains ignore
+        // Exclure ignore dès le départ
         pool=pool.filter(hand => !spot.ignore.includes(hand));
     }
     return pool;
@@ -122,12 +122,18 @@ function startQuiz(){
     pool=addErrorWeight(pool);
     shuffle(pool);
 
+    // FILTRAGE FINAL ignore (après pondération)
+    if(ranges[currentSpot] && ranges[currentSpot].ignore){
+        pool=pool.filter(hand => !ranges[currentSpot].ignore.includes(hand));
+    }
+
     let unique=[];
     for(let hand of pool){
         if(!unique.includes(hand)) unique.push(hand);
         if(unique.length===sessionSize) break;
     }
     sessionHands=unique;
+
     nextHand();
     updateStats();
     document.getElementById("retryBtn").style.display="none";
@@ -143,7 +149,7 @@ function nextHand(){
     document.getElementById("hand").innerText=currentHand;
 }
 
-// Normalisation pour comparaison
+// Normalisation
 function normalize(hand){
     const order="AKQJT98765432";
     if(hand.length==2) return hand;
@@ -156,7 +162,7 @@ function normalize(hand){
 function getCorrectAction(){
     let spot=ranges[currentSpot];
     if(!spot) return "fold";
-    // Exclure ignore
+    // Main ignore → jamais posée
     if(spot.ignore && spot.ignore.includes(currentHand)) return null;
 
     let hand=normalize(currentHand);
@@ -214,6 +220,4 @@ function retryErrors(){
 }
 
 generateHands();
-
-
 
