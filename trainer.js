@@ -1,52 +1,25 @@
-const ranks=["A","K","Q","J","T","9","8","7","6","5","4","3","2"]
-
-let gridHands=[]
 let ranges={}
-let errorsMemory={}
 
 let currentSpot=null
-let mode="normal"
-let sessionSize=20
 
 let sessionHands=[]
-let retryHands=[]
+let errorHands=[]
 
-let currentHand
-let index=0
-let total=0
-let correct=0
+let currentIndex=0
+let score=0
 
 
-function generateHands(){
+document.getElementById("jsonFile").addEventListener("change",loadJSON)
 
-for(let i=0;i<13;i++){
-
-for(let j=0;j<13;j++){
-
-let hand
-
-if(i===j) hand=ranks[i]+ranks[j]
-
-else if(i<j) hand=ranks[i]+ranks[j]+"s"
-
-else hand=ranks[j]+ranks[i]+"o"
-
-gridHands.push(hand)
-
-}
-
-}
-
-}
 
 
 function loadJSON(event){
 
-const file=event.target.files[0]
+let file=event.target.files[0]
 
-if(!file) return
+if(!file)return
 
-const reader=new FileReader()
+let reader=new FileReader()
 
 reader.onload=function(e){
 
@@ -54,9 +27,7 @@ ranges=JSON.parse(e.target.result)
 
 populateSpots()
 
-alert("Range chargée")
-
-startQuiz()
+alert("Ranges loaded")
 
 }
 
@@ -65,167 +36,186 @@ reader.readAsText(file)
 }
 
 
+
 function populateSpots(){
 
-const selector=document.getElementById("spotSelector")
+let selector=document.getElementById("spotSelector")
 
 selector.innerHTML=""
 
-const spots=Object.keys(ranges)
+let spots=Object.keys(ranges)
 
 spots.forEach((spot,i)=>{
 
-const option=document.createElement("option")
+let option=document.createElement("option")
 
 option.value=spot
 option.textContent=spot
 
 selector.appendChild(option)
 
-if(i===0){
-currentSpot=spot
+})
+
+currentSpot=spots[0]
+
 }
+
+
+
+function startQuiz(){
+
+let selector=document.getElementById("spotSelector")
+
+if(selector.value){
+currentSpot=selector.value
+}
+
+if(!ranges[currentSpot]){
+alert("Spot non trouvé")
+return
+}
+
+let spot=ranges[currentSpot]
+
+let allHands=[]
+
+let actions=["raise","shove","call","fold","var"]
+
+actions.forEach(action=>{
+
+if(spot[action]){
+
+spot[action].forEach(hand=>{
+
+allHands.push(hand)
 
 })
 
 }
 
+})
 
-function changeSpot(){
+if(allHands.length===0){
 
-let selector = document.getElementById("spotSelector")
-
-if(selector.value){
-currentSpot = selector.value
-}
-
-startQuiz()
+alert("Aucune main dans ce spot")
+return
 
 }
 
+let count=parseInt(document.getElementById("questionCount").value)
 
-function changeMode(){
+sessionHands=shuffle(allHands).slice(0,count)
 
-mode=document.getElementById("modeSelector").value
+currentIndex=0
+score=0
+errorHands=[]
 
-startQuiz()
-
-}
-
-
-function changeSize(){
-
-sessionSize=parseInt(document.getElementById("sizeSelector").value)
-
-startQuiz()
+showHand()
 
 }
 
 
-function getRangeHands(){
+
+function showHand(){
+
+if(currentIndex>=sessionHands.length){
+
+showResult()
+return
+
+}
+
+document.getElementById("hand").innerText=sessionHands[currentIndex]
+
+document.getElementById("result").innerText=""
+
+}
+
+
+
+function getCorrectAction(hand){
 
 let spot=ranges[currentSpot]
 
-if(!spot) return []
+let actions=["raise","shove","call","fold","var"]
 
-let all=[]
+for(let action of actions){
 
-if(spot.raise) all=all.concat(spot.raise)
-if(spot.shove) all=all.concat(spot.shove)
-if(spot.call) all=all.concat(spot.call)
-if(spot.var) all=all.concat(spot.var)
+if(spot[action] && spot[action].includes(hand)){
 
-return [...new Set(all)]
-
-}
-
-
-function getBorderHands(){
-
-let range=getRangeHands()
-
-let borders=[]
-
-for(let hand of range){
-
-if(hand.length==2) continue
-
-let r1=hand[0]
-let r2=hand[1]
-let type=hand[2]
-
-let i1=ranks.indexOf(r1)
-let i2=ranks.indexOf(r2)
-
-if(i1+1<ranks.length){
-
-let newHand=ranks[i1+1]+r2+type
-
-borders.push(normalize(newHand))
-
-}
-
-if(i2+1<ranks.length){
-
-let newHand=r1+ranks[i2+1]+type
-
-borders.push(normalize(newHand))
+return action
 
 }
 
 }
 
-borders=borders.filter(h=>gridHands.includes(h))
-
-return [...new Set(borders)]
+return null
 
 }
 
 
-function buildPool(){
 
-let pool=[]
+function answer(action){
 
-if(mode==="range") pool=getRangeHands()
+let hand=sessionHands[currentIndex]
 
-else if(mode==="border") pool=getBorderHands()
+let correct=getCorrectAction(hand)
 
-else pool=[...gridHands]
+if(action===correct){
 
-let spot=ranges[currentSpot]
+score++
 
-if(spot && spot.ignore){
+}else{
 
-pool=pool.filter(hand=>!spot.ignore.includes(hand))
-
-}
-
-return pool
+errorHands.push(hand)
 
 }
 
+currentIndex++
 
-function addErrorWeight(pool){
-
-let weighted=[...pool]
-
-for(let hand of pool){
-
-if(errorsMemory[hand]){
-
-for(let i=0;i<errorsMemory[hand];i++){
-
-weighted.push(hand)
+showHand()
 
 }
 
-}
+
+
+function showResult(){
+
+let total=sessionHands.length
+
+let percent=Math.round(score/total*100)
+
+document.getElementById("hand").innerText="Finished"
+
+document.getElementById("result").innerText=
+
+"Score : "+score+" / "+total+" ("+percent+"%)"
 
 }
 
-return weighted
+
+
+function retryErrors(){
+
+if(errorHands.length===0){
+
+alert("No errors")
+
+return
 
 }
+
+sessionHands=[...errorHands]
+
+errorHands=[]
+
+currentIndex=0
+score=0
+
+showHand()
+
+}
+
 
 
 function shuffle(array){
@@ -234,200 +224,17 @@ for(let i=array.length-1;i>0;i--){
 
 let j=Math.floor(Math.random()*(i+1))
 
-[array[i],array[j]]=[array[j],array[i]]
+let temp=array[i]
+
+array[i]=array[j]
+
+array[j]=temp
 
 }
 
-}
-
-
-function startQuiz(){
-
-total=0
-correct=0
-index=0
-retryHands=[]
-
-let pool=buildPool()
-
-pool=addErrorWeight(pool)
-
-shuffle(pool)
-
-if(ranges[currentSpot] && ranges[currentSpot].ignore){
-
-pool=pool.filter(hand=>!ranges[currentSpot].ignore.includes(hand))
-
-}
-
-let unique=[]
-
-for(let hand of pool){
-
-if(!unique.includes(hand)) unique.push(hand)
-
-if(unique.length===sessionSize) break
-
-}
-
-sessionHands=unique
-
-nextHand()
-
-updateStats()
-
-document.getElementById("retryBtn").style.display="none"
+return array
 
 }
 
 
-function nextHand(){
 
-if(index>=sessionHands.length){
-
-endQuiz()
-
-return
-
-}
-
-currentHand=sessionHands[index]
-
-document.getElementById("hand").innerText=currentHand
-
-}
-
-
-function normalize(hand){
-
-const order="AKQJT98765432"
-
-if(hand.length==2) return hand
-
-let r1=hand[0]
-let r2=hand[1]
-let t=hand[2]
-
-if(order.indexOf(r1)<order.indexOf(r2)) return r1+r2+t
-
-return r2+r1+t
-
-}
-
-
-function getCorrectAction(){
-
-let spot=ranges[currentSpot]
-
-if(!spot) return "fold"
-
-if(spot.ignore && spot.ignore.includes(currentHand)) return null
-
-let hand=normalize(currentHand)
-
-function check(list){
-
-if(!list) return false
-
-return list.map(h=>normalize(h.trim())).includes(hand)
-
-}
-
-if(check(spot.raise)) return "raise"
-
-if(check(spot.shove)) return "shove"
-
-if(check(spot.call)) return "call"
-
-if(check(spot.var)) return "var"
-
-return "fold"
-
-}
-
-
-function answer(action){
-
-let good=getCorrectAction()
-
-if(good===null){
-
-index++
-
-nextHand()
-
-return
-
-}
-
-total++
-
-if(action===good){
-
-correct++
-
-}
-
-else{
-
-retryHands.push(currentHand)
-
-errorsMemory[currentHand]=(errorsMemory[currentHand]||0)+1
-
-}
-
-index++
-
-updateStats()
-
-nextHand()
-
-}
-
-
-function updateStats(){
-
-document.getElementById("total").innerText=total
-
-document.getElementById("correct").innerText=correct
-
-let acc=total?((correct/total)*100).toFixed(1):0
-
-document.getElementById("accuracy").innerText=acc
-
-}
-
-
-function endQuiz(){
-
-document.getElementById("hand").innerText="Session terminée"
-
-alert("Score : "+correct+" / "+total)
-
-if(retryHands.length>0)
-
-document.getElementById("retryBtn").style.display="inline"
-
-}
-
-
-function retryErrors(){
-
-sessionHands=[...new Set(retryHands)]
-
-retryHands=[]
-
-index=0
-
-total=0
-
-correct=0
-
-updateStats()
-
-nextHand()
-
-}
-
-
-generateHands()
