@@ -1,106 +1,87 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
 <meta charset="UTF-8">
-<title>Poker Preflop Trainer</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poker Range Trainer</title>
 
 <style>
+
 body{
 font-family:Arial;
 text-align:center;
-padding:20px;
-background:#f4f4f4;
+margin-top:40px;
 }
 
 #hand{
-font-size:70px;
+font-size:40px;
 margin:30px;
 }
 
 button{
-font-size:18px;
-padding:14px 20px;
-margin:6px;
-border-radius:10px;
-border:none;
-cursor:pointer;
-}
-
-.raise{background:#2ecc71;color:white}
-.shove{background:#e74c3c;color:white}
-.call{background:#3498db;color:white}
-.fold{background:#555;color:white}
-.var{background:#f1c40f}
-
-select{
-font-size:16px;
-padding:6px;
+padding:10px 18px;
 margin:5px;
+font-size:16px;
 }
 
-#stats{
-margin-top:20px;
-font-size:18px;
-}
 </style>
+
 </head>
 
 <body>
 
-<h2>Poker Preflop Trainer</h2>
+<h2>Poker Range Trainer</h2>
 
-<h3>Importer une range JSON</h3>
-<input type="file" accept=".json" onchange="loadJSON(event)">
-
-<br><br>
-
-<label>Spot :</label>
-<select id="spotSelector" onchange="changeSpot()">
-</select>
+<input type="file" id="jsonFile">
 
 <br><br>
 
-<label>Mode :</label>
-<select id="modeSelector" onchange="changeMode()">
-<option value="normal">Trainer complet</option>
-<option value="range">Range uniquement</option>
-<option value="border">Frontières</option>
-</select>
+Spot :
+
+<select id="spotSelector"></select>
 
 <br><br>
 
-<label>Questions :</label>
-<select id="sizeSelector" onchange="changeSize()">
-<option value="20">20</option>
+Questions :
+
+<select id="questionCount">
+
+<option value="10">10</option>
+<option value="20" selected>20</option>
+<option value="30">30</option>
 <option value="50">50</option>
-<option value="100">100</option>
+
 </select>
 
-<h1 id="hand">--</h1>
+<br><br>
+
+<button onclick="startQuiz()">Start Quiz</button>
+
+<br><br>
+
+<div id="hand">-</div>
 
 <div>
-<button class="raise" onclick="answer('raise')">Raise</button>
-<button class="shove" onclick="answer('shove')">Shove</button>
-<button class="call" onclick="answer('call')">Call</button>
-<button class="fold" onclick="answer('fold')">Fold</button>
-<button class="var" onclick="answer('var')">Var</button>
-</div>
 
-<div id="stats">
-<p>Total : <span id="total">0</span></p>
-<p>Correct : <span id="correct">0</span></p>
-<p>Accuracy : <span id="accuracy">0</span>%</p>
+<button onclick="answer('raise')">Raise</button>
+<button onclick="answer('shove')">Shove</button>
+<button onclick="answer('call')">Call</button>
+<button onclick="answer('fold')">Fold</button>
+<button onclick="answer('var')">Var</button>
+
 </div>
 
 <br>
-<button onclick="retryErrors()" id="retryBtn" style="display:none">
-Rejouer les erreurs
-</button>
+
+<div id="result"></div>
+
+<br>
+
+<button onclick="retryErrors()">Redo Errors</button>
 
 <script src="trainer.js"></script>
 
 </body>
+
 </html>
-
-
