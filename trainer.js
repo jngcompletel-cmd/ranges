@@ -93,7 +93,11 @@ currentSpot=spot
 
 function changeSpot(){
 
-currentSpot=document.getElementById("spotSelector").value
+let selector = document.getElementById("spotSelector")
+
+if(selector.value){
+currentSpot = selector.value
+}
 
 startQuiz()
 
