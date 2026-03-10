@@ -1,5 +1,4 @@
 let ranges={}
-
 let currentSpot=null
 
 let sessionHands=[]
@@ -8,6 +7,7 @@ let errorHands=[]
 let currentIndex=0
 let score=0
 
+let weights={}
 
 document.getElementById("jsonFile").addEventListener("change",loadJSON)
 
@@ -16,7 +16,6 @@ document.getElementById("jsonFile").addEventListener("change",loadJSON)
 function loadJSON(event){
 
 let file=event.target.files[0]
-
 if(!file)return
 
 let reader=new FileReader()
@@ -26,6 +25,8 @@ reader.onload=function(e){
 ranges=JSON.parse(e.target.result)
 
 populateSpots()
+
+loadWeights()
 
 alert("Ranges loaded")
 
@@ -70,41 +71,33 @@ if(selector.value){
 currentSpot=selector.value
 }
 
-if(!ranges[currentSpot]){
-alert("Spot non trouvé")
-return
-}
-
 let spot=ranges[currentSpot]
 
-let allHands=[]
-
 let actions=["raise","shove","call","fold","var"]
+
+let allHands=[]
 
 actions.forEach(action=>{
 
 if(spot[action]){
 
 spot[action].forEach(hand=>{
-
 allHands.push(hand)
-
 })
 
 }
 
 })
 
-if(allHands.length===0){
+let mode=document.getElementById("mode").value
 
-alert("Aucune main dans ce spot")
-return
-
+if(mode==="frontier"){
+allHands=getFrontierHands(spot)
 }
 
 let count=parseInt(document.getElementById("questionCount").value)
 
-sessionHands=shuffle(allHands).slice(0,count)
+sessionHands=weightedSelection(allHands,count)
 
 currentIndex=0
 score=0
@@ -127,7 +120,7 @@ return
 
 document.getElementById("hand").innerText=sessionHands[currentIndex]
 
-document.getElementById("result").innerText=""
+document.getElementById("feedback").innerText=""
 
 }
 
@@ -142,9 +135,7 @@ let actions=["raise","shove","call","fold","var"]
 for(let action of actions){
 
 if(spot[action] && spot[action].includes(hand)){
-
 return action
-
 }
 
 }
@@ -161,19 +152,31 @@ let hand=sessionHands[currentIndex]
 
 let correct=getCorrectAction(hand)
 
+let feedback=document.getElementById("feedback")
+
 if(action===correct){
 
 score++
 
+feedback.innerHTML="<span class='correct'>Correct</span>"
+
+decreaseWeight(hand)
+
 }else{
+
+feedback.innerHTML="<span class='wrong'>Wrong (correct: "+correct+")</span>"
 
 errorHands.push(hand)
 
+increaseWeight(hand)
+
 }
+
+saveWeights()
 
 currentIndex++
 
-showHand()
+setTimeout(showHand,600)
 
 }
 
@@ -200,7 +203,6 @@ function retryErrors(){
 if(errorHands.length===0){
 
 alert("No errors")
-
 return
 
 }
@@ -227,7 +229,6 @@ let j=Math.floor(Math.random()*(i+1))
 let temp=array[i]
 
 array[i]=array[j]
-
 array[j]=temp
 
 }
@@ -238,3 +239,121 @@ return array
 
 
 
+function getFrontierHands(spot){
+
+let frontier=[]
+
+let actions=["raise","shove","call","fold","var"]
+
+actions.forEach(action=>{
+
+if(spot[action]){
+
+spot[action].forEach(hand=>{
+
+if(isFrontier(hand)){
+frontier.push(hand)
+}
+
+})
+
+}
+
+})
+
+return frontier
+
+}
+
+
+
+function isFrontier(hand){
+
+let rankOrder="AKQJT98765432"
+
+if(hand.length===2)return true
+
+let r1=rankOrder.indexOf(hand[0])
+let r2=rankOrder.indexOf(hand[1])
+
+return Math.abs(r1-r2)<=2
+
+}
+
+
+
+function weightedSelection(hands,count){
+
+let pool=[]
+
+hands.forEach(hand=>{
+
+let w=weights[hand]||1
+
+for(let i=0;i<w;i++){
+pool.push(hand)
+}
+
+})
+
+pool=shuffle(pool)
+
+let result=[]
+let used=new Set()
+
+for(let hand of pool){
+
+if(!used.has(hand)){
+
+result.push(hand)
+used.add(hand)
+
+}
+
+if(result.length>=count)break
+
+}
+
+return result
+
+}
+
+
+
+function loadWeights(){
+
+let saved=localStorage.getItem("rangeTrainerWeights")
+
+if(saved){
+weights=JSON.parse(saved)
+}
+
+}
+
+
+
+function saveWeights(){
+
+localStorage.setItem("rangeTrainerWeights",JSON.stringify(weights))
+
+}
+
+
+
+function increaseWeight(hand){
+
+if(!weights[hand])weights[hand]=1
+
+weights[hand]+=2
+
+}
+
+
+
+function decreaseWeight(hand){
+
+if(!weights[hand])weights[hand]=1
+
+weights[hand]=Math.max(1,weights[hand]-1)
+
+}
