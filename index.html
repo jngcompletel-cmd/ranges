@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <meta charset="UTF-8">
-<title>Poker Range Trainer</title>
+<title>Poker Preflop Trainer</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-
 body{
 font-family:Arial;
 text-align:center;
@@ -45,9 +43,7 @@ margin:5px;
 margin-top:20px;
 font-size:18px;
 }
-
 </style>
-
 </head>
 
 <body>
@@ -55,25 +51,17 @@ font-size:18px;
 <h2>Poker Preflop Trainer</h2>
 
 <h3>Importer une range JSON</h3>
-
 <input type="file" accept=".json" onchange="loadJSON(event)">
 
 <br><br>
 
 <label>Spot :</label>
-
 <select id="spotSelector" onchange="changeSpot()">
-<option value="BTN_open_25bb">BTN open 25bb</option>
-<option value="BTN_open_15bb">BTN open 15bb</option>
-<option value="BTN_open_10bb">BTN open 10bb</option>
-<option value="SB_vs_BTN_open">SB vs BTN open</option>
-<option value="BB_vs_BTN_open">BB vs BTN open</option>
 </select>
 
 <br><br>
 
 <label>Mode :</label>
-
 <select id="modeSelector" onchange="changeMode()">
 <option value="normal">Trainer complet</option>
 <option value="range">Range uniquement</option>
@@ -83,7 +71,6 @@ font-size:18px;
 <br><br>
 
 <label>Questions :</label>
-
 <select id="sizeSelector" onchange="changeSize()">
 <option value="20">20</option>
 <option value="50">50</option>
@@ -101,15 +88,12 @@ font-size:18px;
 </div>
 
 <div id="stats">
-
 <p>Total : <span id="total">0</span></p>
 <p>Correct : <span id="correct">0</span></p>
 <p>Accuracy : <span id="accuracy">0</span>%</p>
-
 </div>
 
 <br>
-
 <button onclick="retryErrors()" id="retryBtn" style="display:none">
 Rejouer les erreurs
 </button>
