@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
 
 <head>
@@ -76,11 +77,9 @@ Spot :
 Questions :
 
 <select id="questionCount">
-
 <option value="10">10</option>
 <option value="20" selected>20</option>
 <option value="30">30</option>
-
 </select>
 
 <br><br>
@@ -88,10 +87,8 @@ Questions :
 Mode :
 
 <select id="mode">
-
 <option value="normal">Normal</option>
 <option value="frontier">Frontières</option>
-
 </select>
 
 <br><br>
@@ -101,7 +98,9 @@ Mode :
 <br><br>
 
 <div id="stats">
-<span id="counter">0/0</span> | Score: <span id="liveScore">0</span>
+<span id="counter">0/0</span> |
+Score: <span id="liveScore">0</span> |
+Errors: <span id="liveErrors">0</span>
 </div>
 
 <div id="progressContainer">
@@ -112,11 +111,7 @@ Mode :
 
 <div>
 
-<button onclick="answer('raise')">Raise</button>
-<button onclick="answer('shove')">Shove</button>
-<button onclick="answer('call')">Call</button>
-<button onclick="answer('fold')">Fold</button>
-<button onclick="answer('var')">Var</button>
+<button onclick="answer('raise')">Raise</button> <button onclick="answer('shove')">Shove</button> <button onclick="answer('call')">Call</button> <button onclick="answer('fold')">Fold</button> <button onclick="answer('var')">Var</button>
 
 </div>
 
