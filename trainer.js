@@ -11,8 +11,6 @@ let weights={}
 
 document.getElementById("jsonFile").addEventListener("change",loadJSON)
 
-
-
 function loadJSON(event){
 
 let file=event.target.files[0]
@@ -36,8 +34,6 @@ reader.readAsText(file)
 
 }
 
-
-
 function populateSpots(){
 
 let selector=document.getElementById("spotSelector")
@@ -46,7 +42,7 @@ selector.innerHTML=""
 
 let spots=Object.keys(ranges)
 
-spots.forEach((spot,i)=>{
+spots.forEach((spot)=>{
 
 let option=document.createElement("option")
 
@@ -60,8 +56,6 @@ selector.appendChild(option)
 currentSpot=spots[0]
 
 }
-
-
 
 function startQuiz(){
 
@@ -105,13 +99,12 @@ errorHands=[]
 
 updateCounter()
 updateScore()
+updateErrors()
 updateProgress()
 
 showHand()
 
 }
-
-
 
 function showHand(){
 
@@ -124,6 +117,7 @@ return
 
 updateCounter()
 updateScore()
+updateErrors()
 updateProgress()
 
 document.getElementById("hand").innerText=sessionHands[currentIndex]
@@ -131,8 +125,6 @@ document.getElementById("hand").innerText=sessionHands[currentIndex]
 document.getElementById("feedback").innerText=""
 
 }
-
-
 
 function answer(action){
 
@@ -145,6 +137,7 @@ let feedback=document.getElementById("feedback")
 if(action===correct){
 
 score++
+updateScore()
 
 feedback.innerHTML="<span class='correct'>Correct</span>"
 
@@ -152,9 +145,11 @@ decreaseWeight(hand)
 
 }else{
 
-feedback.innerHTML="<span class='wrong'>Wrong (correct: "+correct+")</span>"
-
 errorHands.push(hand)
+
+updateErrors()
+
+feedback.innerHTML="<span class='wrong'>Wrong (correct: "+correct+")</span>"
 
 increaseWeight(hand)
 
@@ -168,8 +163,6 @@ setTimeout(showHand,600)
 
 }
 
-
-
 function showResult(){
 
 let total=sessionHands.length
@@ -182,8 +175,6 @@ document.getElementById("result").innerText=
 "Score : "+score+" / "+total+" ("+percent+"%)"
 
 }
-
-
 
 function retryErrors(){
 
@@ -201,11 +192,11 @@ errorHands=[]
 currentIndex=0
 score=0
 
+updateErrors()
+
 showHand()
 
 }
-
-
 
 function getCorrectAction(hand){
 
@@ -225,8 +216,6 @@ return null
 
 }
 
-
-
 function updateCounter(){
 
 let total=sessionHands.length
@@ -238,15 +227,17 @@ document.getElementById("counter").innerText=current+"/"+total
 
 }
 
-
-
 function updateScore(){
 
 document.getElementById("liveScore").innerText=score
 
 }
 
+function updateErrors(){
 
+document.getElementById("liveErrors").innerText=errorHands.length
+
+}
 
 function updateProgress(){
 
@@ -259,8 +250,6 @@ let percent=(currentIndex/total)*100
 document.getElementById("progressBar").style.width=percent+"%"
 
 }
-
-
 
 function shuffle(array){
 
@@ -278,8 +267,6 @@ array[j]=temp
 return array
 
 }
-
-
 
 function getFrontierHands(spot){
 
@@ -307,8 +294,6 @@ return frontier
 
 }
 
-
-
 function isFrontier(hand){
 
 let rankOrder="AKQJT98765432"
@@ -321,8 +306,6 @@ let r2=rankOrder.indexOf(hand[1])
 return Math.abs(r1-r2)<=2
 
 }
-
-
 
 function weightedSelection(hands,count){
 
@@ -360,8 +343,6 @@ return result
 
 }
 
-
-
 function loadWeights(){
 
 let saved=localStorage.getItem("rangeTrainerWeights")
@@ -372,15 +353,11 @@ weights=JSON.parse(saved)
 
 }
 
-
-
 function saveWeights(){
 
 localStorage.setItem("rangeTrainerWeights",JSON.stringify(weights))
 
 }
-
-
 
 function increaseWeight(hand){
 
@@ -389,8 +366,6 @@ if(!weights[hand])weights[hand]=1
 weights[hand]+=2
 
 }
-
-
 
 function decreaseWeight(hand){
 
