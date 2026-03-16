@@ -35,6 +35,26 @@ color:red;
 font-weight:bold;
 }
 
+#stats{
+font-size:18px;
+margin-bottom:10px;
+}
+
+#progressContainer{
+width:300px;
+height:18px;
+background:#ddd;
+margin:auto;
+border-radius:10px;
+overflow:hidden;
+}
+
+#progressBar{
+height:100%;
+width:0%;
+background:#4caf50;
+}
+
 </style>
 
 </head>
@@ -80,6 +100,14 @@ Mode :
 
 <br><br>
 
+<div id="stats">
+<span id="counter">0/0</span> | Score: <span id="liveScore">0</span>
+</div>
+
+<div id="progressContainer">
+<div id="progressBar"></div>
+</div>
+
 <div id="hand">-</div>
 
 <div>
@@ -109,5 +137,3 @@ Mode :
 </body>
 
 </html>
-
-

@@ -103,6 +103,10 @@ currentIndex=0
 score=0
 errorHands=[]
 
+updateCounter()
+updateScore()
+updateProgress()
+
 showHand()
 
 }
@@ -118,29 +122,13 @@ return
 
 }
 
+updateCounter()
+updateScore()
+updateProgress()
+
 document.getElementById("hand").innerText=sessionHands[currentIndex]
 
 document.getElementById("feedback").innerText=""
-
-}
-
-
-
-function getCorrectAction(hand){
-
-let spot=ranges[currentSpot]
-
-let actions=["raise","shove","call","fold","var"]
-
-for(let action of actions){
-
-if(spot[action] && spot[action].includes(hand)){
-return action
-}
-
-}
-
-return null
 
 }
 
@@ -191,7 +179,6 @@ let percent=Math.round(score/total*100)
 document.getElementById("hand").innerText="Finished"
 
 document.getElementById("result").innerText=
-
 "Score : "+score+" / "+total+" ("+percent+"%)"
 
 }
@@ -215,6 +202,61 @@ currentIndex=0
 score=0
 
 showHand()
+
+}
+
+
+
+function getCorrectAction(hand){
+
+let spot=ranges[currentSpot]
+
+let actions=["raise","shove","call","fold","var"]
+
+for(let action of actions){
+
+if(spot[action] && spot[action].includes(hand)){
+return action
+}
+
+}
+
+return null
+
+}
+
+
+
+function updateCounter(){
+
+let total=sessionHands.length
+let current=currentIndex+1
+
+if(current>total) current=total
+
+document.getElementById("counter").innerText=current+"/"+total
+
+}
+
+
+
+function updateScore(){
+
+document.getElementById("liveScore").innerText=score
+
+}
+
+
+
+function updateProgress(){
+
+let total=sessionHands.length
+
+if(total===0)return
+
+let percent=(currentIndex/total)*100
+
+document.getElementById("progressBar").style.width=percent+"%"
 
 }
 
